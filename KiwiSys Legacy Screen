@@ -21,7 +21,16 @@ while true do
 	
 end
 -
-Make a Part containing 2 TextLabels. Name one Dest and name one Stop.
+Make a Part containing 2 TextLabels. Name one Dest and name one Stop. *The TextLabels must be direct children of the Part*
 Put this Script inside of your Part.
 Change the position, font or anything to do with your text however you want it to be.
 (You could even put the whole thing in a Model to make a frame!)
+
+Also please note that to add another TextLabel all you have to do is this:
+	script.Parent.Dest.Text = "Top Text 4"
+	script.Parent.Stop.Text = "Bottom Text 4"
+    script.Parent.NEW.Text = "New Text"
+	wait(10)
+
+ALSO! Please note that to change the amount of time a specific text is on the board, you can change the 'wait(10)' to be however long you want it to be.
+It can be as short as 0.00000(etc)1 or as much as 99999(etc)9.
