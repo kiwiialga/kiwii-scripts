@@ -1,0 +1,17 @@
+put THIS SCRIPT inside a Part containing a Decal:
+
+local decal = script.Parent:WaitForChild("Decal")
+
+while true do
+	decal.Texture = "rbxassetid://IMAGE_ID_1"
+	wait(5)
+
+	decal.Texture = "rbxassetid://IMAGE_ID_2"
+	wait(5)
+end
+
+change the Image IDs to your Roblox AssetIDs, and to add another Image simply just add this to the end:
+  	decal.Texture = "rbxassetid://IMAGE_ID_NEW"
+	  wait(5)
+
+  or if you want to change the amount of time a slide/decal is visible, change the Wait(5) to Wait(your new amount IN SECONDS).
