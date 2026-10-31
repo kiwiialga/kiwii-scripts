@@ -1,0 +1,27 @@
+Option One: take the easy way and just use the board I've already made. download at https://files.catbox.moe/okd8p8.rbxm
+
+Option Two: take the very difficult way and set it up yourself based on my *awful* definitions.
+
+Option 2:
+Make a Script containing this:
+-
+while true do
+	script.Parent.Dest.Text = "Top Text 1"
+	script.Parent.Stop.Text = "Bottom Text 1"
+	wait(10)
+	script.Parent.Dest.Text = "Top Text 2"
+	script.Parent.Stop.Text = "Bottom Text 2"
+	wait(10)
+	script.Parent.Dest.Text = "Top Text 3"
+	script.Parent.Stop.Text = "Bottom Text 3"
+	wait(10)
+	script.Parent.Dest.Text = "Top Text 4"
+	script.Parent.Stop.Text = "Bottom Text 4"
+	wait(10)
+	
+end
+-
+Make a Part containing 2 TextLabels. Name one Dest and name one Stop.
+Put this Script inside of your Part.
+Change the position, font or anything to do with your text however you want it to be.
+(You could even put the whole thing in a Model to make a frame!)
