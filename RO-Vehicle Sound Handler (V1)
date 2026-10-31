@@ -1,0 +1,140 @@
+local vehicle = script.Parent
+local driveSeat = vehicle:WaitForChild("DriveSeat")
+
+local idleSound = driveSeat:WaitForChild("EngineIdle")
+local drivingSound = driveSeat:WaitForChild("EngineDriving")
+local decelerationSound = driveSeat:WaitForChild("EngineDeceleration")
+
+-- Speed settings (studs per second)
+local MOVING_SPEED = 2
+local MAX_SPEED = 70
+
+-- Deceleration detection
+local DECELERATION_RATE_THRESHOLD = 12
+local DECELERATION_HOLD_TIME = 1.0
+
+-- Audio volumes
+local IDLE_VOLUME = 6
+local MIN_DRIVING_VOLUME = 6
+local MAX_DRIVING_VOLUME = 10
+local MIN_DECELERATION_VOLUME = 6
+local MAX_DECELERATION_VOLUME = 10
+
+-- Crossfade settings
+local FADE_STEP = 0.20
+
+local function stopSound(sound)
+	if sound.IsPlaying then
+		sound:Stop()
+	end
+end
+
+local previousSpeed = driveSeat.AssemblyLinearVelocity.Magnitude
+local previousTime = os.clock()
+local decelerationUntil = 0
+local decelerationBlend = 0
+
+idleSound.Looped = true
+drivingSound.Looped = true
+decelerationSound.Looped = true
+
+idleSound.Volume = IDLE_VOLUME
+drivingSound.Volume = 0
+decelerationSound.Volume = 0
+
+idleSound:Play()
+stopSound(drivingSound)
+stopSound(decelerationSound)
+
+while true do
+	local now = os.clock()
+	local elapsed = math.max(now - previousTime, 0.01)
+
+	local speed = driveSeat.AssemblyLinearVelocity.Magnitude
+	local speedRatio = math.clamp(speed / MAX_SPEED, 0, 1)
+
+	-- Detect stronger slowing rather than tiny speed changes.
+	local decelerationRate = (previousSpeed - speed) / elapsed
+
+	if speed > MOVING_SPEED
+		and decelerationRate > DECELERATION_RATE_THRESHOLD then
+		decelerationUntil = now + DECELERATION_HOLD_TIME
+	end
+
+	local isDecelerating =
+		speed > MOVING_SPEED
+		and now < decelerationUntil
+
+	-- Calculate normal engine volumes.
+	local drivingBaseVolume =
+		MIN_DRIVING_VOLUME
+		+ (MAX_DRIVING_VOLUME - MIN_DRIVING_VOLUME) * speedRatio
+
+	local decelerationBaseVolume =
+		MIN_DECELERATION_VOLUME
+		+ (MAX_DECELERATION_VOLUME - MIN_DECELERATION_VOLUME) * speedRatio
+
+	idleSound.Volume = IDLE_VOLUME
+
+	if speed <= MOVING_SPEED then
+		-- Stationary: idle only.
+		stopSound(drivingSound)
+		stopSound(decelerationSound)
+
+		drivingSound.Volume = 0
+		decelerationSound.Volume = 0
+		decelerationBlend = 0
+		decelerationUntil = 0
+
+		if not idleSound.IsPlaying then
+			idleSound:Play()
+		end
+	else
+		-- Moving: crossfade between driving and deceleration.
+		stopSound(idleSound)
+
+		if not drivingSound.IsPlaying then
+			drivingSound:Play()
+		end
+
+		if isDecelerating and not decelerationSound.IsPlaying then
+			decelerationSound:Play()
+		end
+
+		local targetBlend = isDecelerating and 1 or 0
+
+		if decelerationBlend < targetBlend then
+			decelerationBlend = math.min(
+				decelerationBlend + FADE_STEP, targetBlend
+			)
+		elseif decelerationBlend > targetBlend then
+			decelerationBlend = math.max(
+				decelerationBlend - FADE_STEP, targetBlend
+			)
+		end
+
+		drivingSound.Volume =
+			drivingBaseVolume * (1 - decelerationBlend)
+
+		decelerationSound.Volume =
+			decelerationBaseVolume * decelerationBlend
+
+		if decelerationBlend == 0 then
+			stopSound(decelerationSound)
+		end
+	end
+
+	previousSpeed = speed
+	previousTime = now
+
+	task.wait(0.1)
+end
+
+
+-- How to use (With A-Chassis)
+1. Create a Script inside your bus.
+2. Paste the contents of this commit into it (excluding this part).
+3. Create 3 Sound parts inside your DriveSeat named EngineDeceleration, EngineDriving and EngineIdle.
+4. Set the Sound IDs to whatever you wish it to be.
+5. Test it to see if it works. If you've set it up like this then it's going to work (hopefully)
+https://ibb.co/G4SXqjXN
