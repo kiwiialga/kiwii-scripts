@@ -1,0 +1,15 @@
+local decal = script.Parent:WaitForChild("Decal")
+
+local images = {
+	{ id = "rbxassetid://IMAGE_ID_1", time = 5 },
+	{ id = "rbxassetid://IMAGE_ID_2", time = 10 },
+	{ id = "rbxassetid://IMAGE_ID_3", time = 3 },
+	{ id = "rbxassetid://IMAGE_ID_4", time = 8 },
+}
+
+while true do
+	for _, image in ipairs(images) do
+		decal.Texture = image.id
+		task.wait(image.time)
+	end
+end
