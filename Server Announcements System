@@ -1,0 +1,55 @@
+You will need this structure: 
+ReplicatedStorage
+└── AnnouncementEvent (RemoteEvent)
+
+ServerScriptService
+└── AnnouncementServer (Script)
+
+StarterGui
+└── AnnouncementGui (ScreenGui)
+    ├── AnnouncementText (TextLabel)
+    └── AnnouncementClient (LocalScript)
+
+
+-- Server Script
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local announcementEvent = ReplicatedStorage:WaitForChild("AnnouncementEvent")
+
+local announcements = {
+    "Welcome to the server!",
+    "Remember to follow the game rules.",
+    "Enjoy your time playing!"
+}
+
+local announcementDelay = 15
+
+while true do
+    for _, message in ipairs(announcements) do
+        announcementEvent:FireAllClients(message)
+        task.wait(announcementDelay)
+    end
+end
+
+
+-- Client Script
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local announcementEvent = ReplicatedStorage:WaitForChild("AnnouncementEvent")
+
+local announcementText = script.Parent:WaitForChild("AnnouncementText")
+
+announcementText.Visible = false
+
+announcementEvent.OnClientEvent:Connect(function(message)
+
+    announcementText.Text = message
+    announcementText.Visible = true
+
+    task.wait(5)
+
+    announcementText.Visible = false
+
+end)
