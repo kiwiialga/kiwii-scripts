@@ -18,9 +18,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local announcementEvent = ReplicatedStorage:WaitForChild("AnnouncementEvent")
 
 local announcements = {
-    "Welcome to the server!",
-    "Remember to follow the game rules.",
-    "Enjoy your time playing!"
+    "3",
+    "2",
+    "1"
 }
 
 local announcementDelay = 15
